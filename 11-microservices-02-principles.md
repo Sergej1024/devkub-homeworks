@@ -142,9 +142,12 @@ drwxr-xr-x 3 sergej sergej  4096 окт  3 14:07 security
 drwxr-xr-x 3 sergej sergej  4096 окт  3 14:07 uploader
 sergej@fedora:~/GIT_SORE/devkub-homeworks/11-microservices-02-principles [±|main → origin U:2 ?:3 ✗|] $ 
 ```
+
+[nginx-gateway](./11-microservices-02-principles/gateway/nginx.conf)
+
 <details><summary>Скрины</summary>
 
-![](./img/3.1.png)
-![](./img/3.2.png)
+![](./11-microservices-02-principles/img/3.1.png)
+![](./11-microservices-02-principles/img/3.2.png)
 
 </details>
