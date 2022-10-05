@@ -121,8 +121,30 @@ curl -X GET http://localhost/images/4e6df220-295e-4231-82bc-45e4b1484430.jpg
 
 ---
 
-### Как оформить ДЗ?
+```shell
+sergej@fedora:~/GIT_SORE/devkub-homeworks/11-microservices-02-principles [±|main → origin U:2 ?:1 ✗|] $ curl -X POST -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJib2IifQ.hiMVLmssoTsy1MqbmIoviDeFPvo-nCd92d4UFiN2O2I' -H 'Content-Type: octet/stream' --data-binary @1.1.png http://localhost/upload
+{"filename":"705be922-9fb3-48e8-9d3e-074a920fafba.png"}
+sergej@fedora:~/GIT_SORE/devkub-homeworks/11-microservices-02-principles [±|main → origin U:2 ?:1 ✗|] $ curl -X POST -H 'Content-Type: application/json' -d '{"login":"bob", "password":"qwe123"}' http://localhost/token
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJib2IifQ.hiMVLmssoTsy1MqbmIoviDeFPvo-nCd92d4UFiN2O2I
+sergej@fedora:~/GIT_SORE/devkub-homeworks/11-microservices-02-principles [±|main → origin U:2 ?:2 ✗|] $ curl localhost/images/705be922-9fb3-48e8-9d3e-074a920fafba.png > 705be922-9fb3-48e8-9d3e-074a920fafba.png
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   351  100   351    0     0    99k      0 --:--:-- --:--:-- --:--:--  114k
+sergej@fedora:~/GIT_SORE/devkub-homeworks/11-microservices-02-principles [±|main → origin U:2 ?:3 ✗|] $ ls -l
+итого 104
+-rw-r--r-- 1 sergej sergej 74382 окт  3 08:06 1.1.png
+-rw-r--r-- 1 sergej sergej   351 окт  5 11:41 705be922-9fb3-48e8-9d3e-074a920fafba.png
+-rw-r--r-- 1 sergej sergej  1662 окт  3 14:07 docker-compose.yaml
+drwxr-xr-x 2 sergej sergej  4096 окт  3 14:07 gateway
+drwxr-xr-x 2 sergej sergej  4096 окт  5 11:35 img
+-rw-r--r-- 1 sergej sergej  1719 окт  3 14:07 readme.md
+drwxr-xr-x 3 sergej sergej  4096 окт  3 14:07 security
+drwxr-xr-x 3 sergej sergej  4096 окт  3 14:07 uploader
+sergej@fedora:~/GIT_SORE/devkub-homeworks/11-microservices-02-principles [±|main → origin U:2 ?:3 ✗|] $ 
+```
+<details><summary>Скрины</summary>
 
-Выполненное домашнее задание пришлите ссылкой на .md-файл в вашем репозитории.
+![](./img/3.1.png)
+![](./img/3.2.png)
 
----
+</details>
