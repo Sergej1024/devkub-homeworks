@@ -105,6 +105,14 @@
 docker compose файл запустив который можно перейти по адресу http://localhost:8081 по которому доступна Kibana.
 Логин в Kibana должен быть admin пароль qwerty123456
 
+<details><summary>Скрины</summary>
+
+![](./11-microservices-03-approaches/img/4.1.png)
+![](./11-microservices-03-approaches/img/4.2.png)
+
+[docker-compose](./11-microservices-03-approaches/docker-compose.yaml)
+
+</details>
 
 ## Задача 5: Мониторинг * (необязательная)
 
@@ -122,3 +130,12 @@ docker compose файл запустив который можно перейт�
 docker compose файл запустив который можно перейти по адресу http://localhost:8081 по которому доступна Grafana с настроенным Dashboard.
 Логин в Grafana должен быть admin пароль qwerty123456
 
+<details><summary>Скрины</summary>
+
+![](./11-microservices-03-approaches/img/5.1.png)
+
+[nginx.conf](./11-microservices-03-approaches/gateway/nginx.conf)
+
+</details>
+
+[Исходники](./11-microservices-03-approaches/)
