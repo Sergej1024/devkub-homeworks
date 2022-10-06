@@ -105,6 +105,8 @@
 docker compose файл запустив который можно перейти по адресу http://localhost:8081 по которому доступна Kibana.
 Логин в Kibana должен быть admin пароль qwerty123456
 
+Порт Kibana я оставил стандартным, 5601. Порт 8081 будет использоваться для Grafana.
+
 <details><summary>Скрины</summary>
 
 ![](./11-microservices-03-approaches/img/4.1.png)
