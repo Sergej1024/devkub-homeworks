@@ -1,0 +1,26 @@
+api:
+  enabled: true
+sources:
+  docker:
+    type: docker_logs
+    # include_containers:
+    #   - devkub
+transforms:
+  docker_transformer:
+    type: remove_fields
+    inputs:
+      - docker
+    fields:
+      - label
+sinks:
+  elastic:
+    type: elasticsearch
+    inputs:
+      - docker_transformer
+    endpoint: '${ELASTICSEARCH_HOSTS}'
+    mode: bulk
+    compression: none
+    auth:
+      strategy: basic
+      user: '${ELASTICSEARCH_USERNAME}'
+      password: '${ELASTICSEARCH_PASSWORD}'
