@@ -3,8 +3,16 @@ api:
 sources:
   docker:
     type: docker_logs
-    # include_containers:
-    #   - devkub
+    include_containers:
+      - elastic
+      - gateway
+      - grafana
+      - kibana
+      - prometheus
+      - security
+      - storage
+      - uploader
+      - vector
 transforms:
   docker_transformer:
     type: remove_fields

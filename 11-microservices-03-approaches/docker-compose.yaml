@@ -3,17 +3,26 @@ volumes:
   prometheus-data:
   grafana_data:
 
+networks:
+  net:
+
 services:
   storage:
     image: minio/minio:latest
-    command: server /data
+    container_name: storage
+    command: server /data --console-address ":37755"
     restart: always
     expose: 
       - 9000
+    ports:
+      - 9000:9000
+      - 37755:37755
     environment:
       MINIO_ROOT_USER: ${Storage_AccessKey:-STORAGE_ACCESS_KEY}
       MINIO_ROOT_PASSWORD: ${Storage_Secret:-STORAGE_SECRET_KEY}
       MINIO_PROMETHEUS_AUTH_TYPE: public
+      MINIO_PROMETHEUS_URL: http://promitheus:9090
+      MINIO_PROMETHEUS_JOB_ID: storage
     volumes:
       - data:/data
     healthcheck:
@@ -21,9 +30,12 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+    networks:
+      - net
 
   createbuckets:
     image: minio/mc
+    container_name: createbuckets
     depends_on:
       - storage
     restart: on-failure
@@ -34,9 +46,12 @@ services:
       /usr/bin/mc policy set download storage/${Storage_Bucket:-data} &&
       exit 0;
       "
+    networks:
+      - net
 
   uploader:
     build: ./uploader
+    container_name: uploader
     depends_on:
       - storage
       - createbuckets
@@ -49,16 +64,24 @@ services:
       S3_ACCESS_KEY: ${Storage_AccessKey:-STORAGE_ACCESS_KEY}
       S3_ACCESS_SECRET: ${Storage_Secret:-STORAGE_SECRET_KEY}
       S3_BUCKET: ${Storage_Bucket:-STORAGE_BUCKET}
+    networks:
+      - net
   
   security:
     build: ./security
+    container_name: security
     expose: 
       - 3000
+    ports:
+      - 3003:3000
     environment:
       PORT: 3000
+    networks:
+      - net
 
   gateway:
     image: nginx:alpine
+    container_name: gateway
     volumes:
       - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
@@ -67,6 +90,8 @@ services:
       - storage
       - uploader
       - security
+    networks:
+      - net
 
   prometheus:
     image: prom/prometheus
@@ -77,6 +102,8 @@ services:
       - "9090"
     ports:
       - "9090:9090"
+    networks:
+      - net
 
   grafana:
     image: grafana/grafana-oss
@@ -93,10 +120,12 @@ services:
       - ./monitoring/prometheus_datasource.yml:/etc/grafana/provisioning/datasources/prometheus_datasource.yml
       - ./monitoring/prometheus_dashboards.yml:/etc/grafana/provisioning/dashboards/prometheus_dashboards.yml
       - ./monitoring/prometheus_dashboard.json:/etc/grafana/provisioning/dashboards/prometheus_dashboard.json
+    networks:
+      - net
   
   vector:
     container_name: vector
-    image: timberio/vector:0.24.1-debian
+    image: timberio/vector:0.22.0-debian
     expose:
       - 8686
     ports:
@@ -106,8 +135,10 @@ services:
     volumes:
       - ./logs/vector.yml:/etc/vector/vector.yml:ro
       - /var/run/docker.sock:/var/run/docker.sock
-    # depends_on:
-    #   - elasticuser
+    depends_on:
+      - elasticuser
+    networks:
+      - net
 
   kibana:
     container_name: kibana
@@ -118,6 +149,8 @@ services:
       - 5601
     ports:
       - 5601:5601
+    networks:
+      - net
   
   elastic:
     container_name: elastic
@@ -134,6 +167,8 @@ services:
       memlock:
         soft: -1
         hard: -1
+    networks:
+      - net
   
   elasticuser: 
     container_name: elasticuser
@@ -148,6 +183,8 @@ services:
     entrypoint:
       - sh
       - /elasticuserpassword.sh
+    networks:
+      - net
   
   createindex: 
     container_name: createindex
@@ -163,3 +200,5 @@ services:
       - sh
       - -x
       - /createindex.sh
+    networks:
+      - net

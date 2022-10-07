@@ -10,7 +10,6 @@ http_code=$(curl --silent --output $(mktemp) \
         "refresh_fields": true,
         "index_pattern": {
             "title":"vector*",
-            "timeFieldName":"timestamp"
         }
     }' \
     --write-out "%{http_code}")
