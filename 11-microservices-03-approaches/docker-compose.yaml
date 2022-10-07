@@ -9,7 +9,7 @@ networks:
 services:
   storage:
     image: minio/minio:latest
-    container_name: storage
+    container_name: devkub11-storage
     command: server /data --console-address ":37755"
     restart: always
     expose: 
@@ -51,7 +51,7 @@ services:
 
   uploader:
     build: ./uploader
-    container_name: uploader
+    container_name: devkub11-uploader
     depends_on:
       - storage
       - createbuckets
@@ -69,7 +69,7 @@ services:
   
   security:
     build: ./security
-    container_name: security
+    container_name: devkub11-security
     expose: 
       - 3000
     ports:
@@ -81,7 +81,7 @@ services:
 
   gateway:
     image: nginx:alpine
-    container_name: gateway
+    container_name: devkub11-gateway
     volumes:
       - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
@@ -95,7 +95,7 @@ services:
 
   prometheus:
     image: prom/prometheus
-    container_name: prometheus
+    container_name: devkub11-prometheus
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
     expose:
@@ -107,7 +107,7 @@ services:
 
   grafana:
     image: grafana/grafana-oss
-    container_name: grafana
+    container_name: devkub11-grafana
     restart: always
     expose:
       - 3000
@@ -124,7 +124,7 @@ services:
       - net
   
   vector:
-    container_name: vector
+    container_name: devkub11-vector
     image: timberio/vector:0.22.0-debian
     expose:
       - 8686
@@ -133,7 +133,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./logs/vector.yml:/etc/vector/vector.yml:ro
+      - ./logs/vector.toml:/etc/vector/vector.toml:ro
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - elasticuser
@@ -141,7 +141,7 @@ services:
       - net
 
   kibana:
-    container_name: kibana
+    container_name: devkub11-kibana
     image: kibana:7.17.4
     env_file:
       - .env
@@ -153,7 +153,7 @@ services:
       - net
   
   elastic:
-    container_name: elastic
+    container_name: devkub11-elastic
     image: elasticsearch:7.17.4
     expose:
       - 9200
