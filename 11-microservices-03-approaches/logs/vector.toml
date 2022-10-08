@@ -5,14 +5,14 @@
 enabled = true
 
 # Random Syslog-formatted logs
-[sources.docker_113]
+[sources.docker]
 type = "docker_logs"
-include_containers = [ "devkub11" ]
+include_containers = [ "netology" ]
 
 [transforms.docker_transformer]
 # "error type: illegal_argument_exception, reason: can't merge a non object mapping [label.com.docker.compose.project] with an object mapping"
 type = "remove_fields"
-inputs = ["docker_113"]
+inputs = ["docker"]
 fields = ["label"]
 
 [sinks.elastic]

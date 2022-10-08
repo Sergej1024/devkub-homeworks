@@ -9,7 +9,7 @@ networks:
 services:
   storage:
     image: minio/minio:latest
-    container_name: devkub11-storage
+    container_name: netology-storage
     command: server /data --console-address ":37755"
     restart: always
     expose: 
@@ -51,7 +51,7 @@ services:
 
   uploader:
     build: ./uploader
-    container_name: devkub11-uploader
+    container_name: netology-uploader
     depends_on:
       - storage
       - createbuckets
@@ -69,7 +69,7 @@ services:
   
   security:
     build: ./security
-    container_name: devkub11-security
+    container_name: netology-security
     expose: 
       - 3000
     ports:
@@ -81,7 +81,7 @@ services:
 
   gateway:
     image: nginx:alpine
-    container_name: devkub11-gateway
+    container_name: netology-gateway
     volumes:
       - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
@@ -95,7 +95,7 @@ services:
 
   prometheus:
     image: prom/prometheus
-    container_name: devkub11-prometheus
+    container_name: netology-prometheus
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
     expose:
@@ -107,7 +107,7 @@ services:
 
   grafana:
     image: grafana/grafana-oss
-    container_name: devkub11-grafana
+    container_name: netology-grafana
     restart: always
     expose:
       - 3000
@@ -124,7 +124,7 @@ services:
       - net
   
   vector:
-    container_name: devkub11-vector
+    container_name: netology-vector
     image: timberio/vector:0.22.0-debian
     expose:
       - 8686
@@ -141,7 +141,7 @@ services:
       - net
 
   kibana:
-    container_name: devkub11-kibana
+    container_name: netology-kibana
     image: kibana:7.17.4
     env_file:
       - .env
@@ -153,7 +153,7 @@ services:
       - net
   
   elastic:
-    container_name: devkub11-elastic
+    container_name: netology-elastic
     image: elasticsearch:7.17.4
     expose:
       - 9200

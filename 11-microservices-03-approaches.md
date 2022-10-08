@@ -110,7 +110,6 @@ docker compose файл запустив который можно перейт�
 <details><summary>Скрины</summary>
 
 ![](./11-microservices-03-approaches/img/4.1.png)
-![](./11-microservices-03-approaches/img/4.2.png)
 
 [docker-compose](./11-microservices-03-approaches/docker-compose.yaml)
 
