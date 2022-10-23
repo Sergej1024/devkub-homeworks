@@ -23,15 +23,19 @@
  * пользователь может просматривать логи подов и их конфигурацию (kubectl logs pod <pod_id>, kubectl describe pod <pod_id>)
 
 Создание неймспейса с деплоем hello-node:
+
 ![](./12-kubernetes-02-commands/img/2.1.png)
 
 Создание сертификата нового пользователя:
+
 ![](./12-kubernetes-02-commands/img/2.2.png)
 
 Создание пользователя, пространства имен и приложения для проверки:
+
 ![](./12-kubernetes-02-commands/img/2.3.png)
 
 Создание и привязка роли:
+
 ![](./12-kubernetes-02-commands/img/2.4.png)
 
 <details><summary>role.yaml</summary>
