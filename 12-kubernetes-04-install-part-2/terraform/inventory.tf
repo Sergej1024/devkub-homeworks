@@ -29,7 +29,7 @@ resource "local_file" "inventory" {
     calico_rr:
       hosts: {}
   DOC
-  filename = "kubespray/inventory/mycluster/inventory.ini"
+  filename = "../kubespray/inventory/mycluster/inventory.ini"
 
    depends_on = [
    yandex_compute_instance.control-plane,
