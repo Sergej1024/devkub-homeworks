@@ -6,7 +6,7 @@ provider "yandex" {
 }
 
 data "yandex_compute_image" "centos" {
-  family = "centos-8"
+  family = "centos-7"
 
   # depends_on = [
   #   null_resource.folder
@@ -118,7 +118,7 @@ resource "yandex_compute_instance" "worker" {
 
 locals {
   instance_count = {
-    "prod"=2
+    "prod"=1
     "stage"=1
   }
   vm_cores = {
