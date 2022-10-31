@@ -4,7 +4,7 @@ resource "null_resource" "wait" {
   }
 
   depends_on = [
-    local_file.inventory
+    null_resource.inventories #local_file.inventory
   ]
 }
 

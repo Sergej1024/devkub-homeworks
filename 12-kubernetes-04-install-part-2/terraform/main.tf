@@ -53,21 +53,21 @@ resource "yandex_compute_instance" "control-plane" {
   }
 }
 
-resource "yandex_compute_instance" "worker-foreach" {
+resource "yandex_compute_instance" "worker" {
 
-  name  = "${terraform.workspace}-worker-${each.key}"
-  for_each = local.vm_foreach[terraform.workspace]
+  count = local.instance_count_work[terraform.workspace]
+  name  = "${terraform.workspace}-worker-${count.index}"
 
   resources {
-    cores  = each.value.cores
-    memory = each.value.memory
+    cores  = local.vm_cores_work[terraform.workspace]
+    memory = local.vm_memory_work[terraform.workspace]
   }
 
   boot_disk {
     initialize_params {
       image_id = data.yandex_compute_image.centos.id
       type     = "network-hdd"
-      size     = each.value.disk #"100"
+      size     = local.vm_disk_work[terraform.workspace] #"100"
     }
   }
 
@@ -80,12 +80,41 @@ resource "yandex_compute_instance" "worker-foreach" {
     ssh-keys = "cloud-user${file("~/.ssh/id_rsa.pub")}"
     user-data = "${file(var.user_data)}"
   }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
 }
+
+# resource "yandex_compute_instance" "worker-foreach" {
+
+#   name  = "${terraform.workspace}-worker-${each.key}"
+#   for_each = local.vm_foreach[terraform.workspace]
+
+#   resources {
+#     cores  = each.value.cores
+#     memory = each.value.memory
+#   }
+
+#   boot_disk {
+#     initialize_params {
+#       image_id = data.yandex_compute_image.centos.id
+#       type     = "network-hdd"
+#       size     = each.value.disk #"100"
+#     }
+#   }
+
+#   network_interface {
+#     subnet_id = yandex_vpc_subnet.subnet-1.id
+#     nat       = true
+#   }
+
+#   metadata = {
+#     ssh-keys = "cloud-user${file("~/.ssh/id_rsa.pub")}"
+#     user-data = "${file(var.user_data)}"
+#   }
+
+#   lifecycle {
+#     create_before_destroy = true
+#   }
+
+# }
 
 locals {
   instance_count = {
@@ -105,18 +134,35 @@ locals {
     "stage"=50
   }
 
-  vm_foreach = {
-    prod = {
-      "1" = { cores = "2", memory = "2", disk = "100" },
-      "2" = { cores = "2", memory = "2", disk = "100" },
-      "3" = { cores = "2", memory = "2", disk = "100" },
-      "4" = { cores = "2", memory = "2", disk = "100" }
-    }
-	  stage = {
-      "1" = { cores = "1", memory = "1", disk = "100" },
-      "2" = { cores = "1", memory = "1", disk = "100" },
-      "3" = { cores = "1", memory = "1", disk = "100" }
-    }
+  instance_count_work = {
+    "prod"=4
+    "stage"=3
   }
+  vm_cores_work = {
+    "prod"=2
+    "stage"=1
+  }
+  vm_memory_work = {
+    "prod"=2
+    "stage"=1
+  }
+  vm_disk_work = {
+    "prod"=100
+    "stage"=100
+  }
+
+  # vm_foreach = {
+  #   prod = {
+  #     "1" = { cores = "2", memory = "2", disk = "100" },
+  #     "2" = { cores = "2", memory = "2", disk = "100" },
+  #     "3" = { cores = "2", memory = "2", disk = "100" },
+  #     "4" = { cores = "2", memory = "2", disk = "100" }
+  #   }
+	#   stage = {
+  #     "1" = { cores = "1", memory = "1", disk = "100" },
+  #     "2" = { cores = "1", memory = "1", disk = "100" },
+  #     "3" = { cores = "1", memory = "1", disk = "100" }
+  #   }
+  # }
 }
 
