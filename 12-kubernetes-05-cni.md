@@ -17,34 +17,40 @@
 Требования:
 
 * установить утилиту calicoctl;
+
+```shell
+curl -s https://raw.githubusercontent.com/BigKAA/youtube/master/net/02-calico/01-install-calicoctl.sh | bash
+```
+
+```shell
+curl -s https://raw.githubusercontent.com/BigKAA/youtube/master/net/02-calico/02-calicoctl.cfg -o /etc/calico/calicoctl.cfg 
+```
+
+Правим конфиг
+
+```shell
+user@home 09:27:48 ~ →  sudo cat /etc/calico/calicoctl.cfg
+apiVersion: projectcalico.org/v3
+kind: CalicoAPIConfig
+metadata:
+spec:
+  datastoreType: "kubernetes"
+  kubeconfig: "/home/user/.kube/config"
+```
+
 * получить 3 вышеописанных типа в консоли.
 
 ![](./12-kubernetes-05-cni/img/2.1.png)
 
 ```shell
-[ansible@prod-cp-0 ~]$ calicoctl get node
-NAME            
-prod-cp-0       
-prod-worker-0   
-prod-worker-1   
-prod-worker-2   
-prod-worker-3   
-
-[ansible@prod-cp-0 ~]$ calicoctl get ippool
-NAME           CIDR             SELECTOR   
-default-pool   10.233.64.0/18   all()      
-
-[ansible@prod-cp-0 ~]$ calicoctl get profile
+user@home 09:26:25 ~ →  calicoctl get profile
 NAME                                                 
 projectcalico-default-allow                          
 kns.default                                          
-kns.ingress-nginx                                    
 kns.kube-node-lease                                  
 kns.kube-public                                      
 kns.kube-system                                      
 ksa.default.default                                  
-ksa.ingress-nginx.default                            
-ksa.ingress-nginx.ingress-nginx                      
 ksa.kube-node-lease.default                          
 ksa.kube-public.default                              
 ksa.kube-system.attachdetach-controller              
@@ -87,5 +93,17 @@ ksa.kube-system.token-cleaner
 ksa.kube-system.ttl-after-finished-controller        
 ksa.kube-system.ttl-controller                       
 
-[ansible@prod-cp-0 ~]$ 
+user@home 09:27:07 ~ →  calicoctl get nodes
+NAME            
+prod-cp-0       
+prod-worker-0   
+prod-worker-1   
+prod-worker-2   
+prod-worker-3   
+
+user@home 09:27:37 ~ →  calicoctl get ippool
+NAME           CIDR             SELECTOR   
+default-pool   10.233.64.0/18   all()      
+
+user@home 09:27:48 ~ →  
 ```
