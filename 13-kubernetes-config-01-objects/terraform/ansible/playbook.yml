@@ -1,0 +1,34 @@
+---
+- name: Get kuber credentials
+  hosts: stage-cp-0
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Save host to var
+      ansible.builtin.set_fact:
+        kube_control_node: "{{ ansible_host }}"
+    - name: Print fact
+      ansible.builtin.debug:
+        var: kube_control_node
+
+    - name: Duplicate folder kube
+      ansible.builtin.copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /etc/kubernetes/admin_export.conf
+        remote_src: true
+        mode: 0755
+
+    - name: Set Kube IP in config
+      ansible.builtin.replace:
+        path: /etc/kubernetes/admin_export.conf
+        regexp: 'server: https://[0-9.]*:'
+        replace: "server: https://{{ kube_control_node }}:"
+    - name: Fetch kube config
+      ansible.builtin.synchronize:
+        src: /etc/kubernetes/admin_export.conf
+        dest: ~/.kube/config
+        delete: true
+        recursive: true
+        owner: false
+        group: false
+        mode: pull

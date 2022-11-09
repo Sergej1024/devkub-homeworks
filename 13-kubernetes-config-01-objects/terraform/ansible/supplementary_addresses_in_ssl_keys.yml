@@ -1,0 +1,11 @@
+---
+- name: Allow access by public IP
+  hosts: localhost
+  become: false
+  gather_facts: false
+  tasks:
+      - name: Configure option in k8s-cluster.yml
+        ansible.builtin.replace:
+          path: ../kubespray/inventory/mycluster/group_vars/k8s_cluster/k8s-cluster.yml
+          regexp: '^.*supplementary_addresses_in_ssl_keys:.*'
+          replace: "supplementary_addresses_in_ssl_keys: [127.0.0.1, {{ hostvars['stage-cp-0']['ansible_host'] }}]"
