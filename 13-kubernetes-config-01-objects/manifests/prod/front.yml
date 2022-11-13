@@ -4,7 +4,7 @@ metadata:
   labels:
     app: frontend
   name: frontend
-  namespace: prod
+  namespace: production
 spec:
   selector:
     matchLabels:
@@ -29,7 +29,7 @@ metadata:
   labels:
     app: frontend
   name: frontend
-  namespace: prod
+  namespace: production
 spec:
   type: ClusterIP
   ports:

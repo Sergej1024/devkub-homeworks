@@ -4,7 +4,7 @@ metadata:
   labels:
     app: backend
   name: backend
-  namespace: prod
+  namespace: production
 spec:
   selector:
     matchLabels:
@@ -33,7 +33,7 @@ metadata:
   labels:
     app: backend
   name: backend
-  namespace: prod
+  namespace: production
 spec:
   type: ClusterIP
   ports:
