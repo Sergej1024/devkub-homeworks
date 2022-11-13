@@ -18,8 +18,6 @@
 ```shell
 user@home 11:52:23 ~/git_store/devkub-homeworks/13-kubernetes-config-01-objects/manifests |main → origin U:2 ✗| →  kubectl create namespace stage
 namespace/stage created
-user@home 11:52:47 ~/git_store/devkub-homeworks/13-kubernetes-config-01-objects/manifests |main → origin U:2 ✗| →  kubectl get po,deployment,svc,ep -n stage
-No resources found in stage namespace.
 user@home 11:53:11 ~/git_store/devkub-homeworks/13-kubernetes-config-01-objects/manifests |main → origin U:2 ✗| →  kubectl apply -f stage/
 deployment.apps/front-back created
 statefulset.apps/db created

@@ -16,12 +16,19 @@ spec:
         app: frontend
     spec:
       containers:
-      - image: sergej1024/backend:latest
+      - image: sergej1024/frontend:latest
         imagePullPolicy: IfNotPresent
         name: frontend
         env:
           - name: BASE_URL
             value: http://backend:9000
+        volumeMounts:
+          - mountPath: "/tmp/cache"
+            name: static-storage
+      volumes:
+        - name: static-storage
+          persistentVolumeClaim:
+            claimName: static-storage-pvc
 ---
 apiVersion: v1
 kind: Service

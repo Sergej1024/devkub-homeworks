@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: front-back
+  name: front-back
+  namespace: stage
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app: front-back
+  template:
+    metadata:
+      labels:
+        app: front-back
+    spec:
+      initContainers:
+      - name: wait-for-db
+        image: postgres:13-alpine
+        command: [ "sh", "-c", "until pg_isready -h db -p 5432 -U postgres:postgres; do echo 'not yet'; sleep 2; done" ]
+      containers:
+      - image: sergej1024/backend:latest
+        imagePullPolicy: IfNotPresent
+        name: backend
+        volumeMounts:
+          - mountPath: "/data/static"
+            name: static-storage
+      - image: sergej1024/frontend:latest
+        imagePullPolicy: IfNotPresent
+        name: frontend
+        volumeMounts:
+          - mountPath: "/tmp/cache"
+            name: static-storage
+      volumes:
+      - name: static-storage
+        emptyDir: {}
