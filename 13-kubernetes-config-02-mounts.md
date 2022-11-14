@@ -126,61 +126,48 @@ user@home 07:03:55 ~/git_store/devkub-homeworks/13-kubernetes-config-02-mounts/m
 * [statefulset БД](./13-kubernetes-config-02-mounts/manifests/prod/db.yml)
 
 ```shell
-user@home 07:40:15 ~/git_store/devkub-homeworks/13-kubernetes-config-02-mounts/manifests |main → origin U:4 ?:1 ✗| →  kubectl create namespace production
+sergej@fedora:~/GIT_SORE/devkub-homeworks/13-kubernetes-config-02-mounts/manifests [±|main → origin U:3 ✗|] $ kubectl create namespace production
 namespace/production created
-user@home 08:07:30 ~/git_store/devkub-homeworks/13-kubernetes-config-02-mounts/manifests |main → origin U:4 ?:1 ✗| →  kubectl apply -f prod/
+sergej@fedora:~/GIT_SORE/devkub-homeworks/13-kubernetes-config-02-mounts/manifests [±|main → origin U:3 ✗|] $ kubectl apply -f ./prod
 deployment.apps/backend created
 service/backend created
 statefulset.apps/db created
 service/db created
 deployment.apps/frontend created
 service/frontend created
-persistentvolume/static-storage-pv created
 persistentvolumeclaim/static-storage-pvc created
-user@home 08:07:43 ~/git_store/devkub-homeworks/13-kubernetes-config-02-mounts/manifests |main → origin U:4 ?:1 ✗| →  kubectl get po,pv,pvc -n production -o wide
-NAME                            READY   STATUS              RESTARTS   AGE   IP       NODE             NOMINATED NODE   READINESS GATES
-pod/backend-69db8ffdd5-5k4zm    0/1     Init:0/1            0          13s   <none>   stage-worker-2   <none>           <none>
-pod/db-0                        0/1     ContainerCreating   0          12s   <none>   stage-worker-1   <none>           <none>
-pod/frontend-5fcb5d778d-zh77d   0/1     ContainerCreating   0          11s   <none>   stage-worker-0   <none>           <none>
+sergej@fedora:~/GIT_SORE/devkub-homeworks/13-kubernetes-config-02-mounts/manifests [±|main → origin U:3 ✗|] $ kubectl get po,pv,pvc -n production -o wide
+NAME                            READY   STATUS    RESTARTS   AGE     IP              NODE             NOMINATED NODE   READINESS GATES
+pod/backend-7987fc7b4d-b4r84    1/1     Running   0          2m54s   10.233.81.130   stage-worker-2   <none>           <none>
+pod/db-0                        1/1     Running   0          2m53s   10.233.82.65    stage-worker-0   <none>           <none>
+pod/frontend-867df49788-ckppd   1/1     Running   0          2m52s   10.233.82.66    stage-worker-0   <none>           <none>
 
-NAME                                 CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                           STORAGECLASS   REASON   AGE   VOLUMEMODE
-persistentvolume/static-storage-pv   2Gi        RWX            Retain           Bound    production/static-storage-pvc   nfs                     12s   Filesystem
+NAME                                                        CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                           STORAGECLASS   REASON   AGE   VOLUMEMODE
+persistentvolume/pvc-e2efb401-8271-427b-97b4-8acaf67d2245   100Mi      RWX            Delete           Bound    production/static-storage-pvc   nfs                     72s   Filesystem
 
-NAME                                       STATUS   VOLUME              CAPACITY   ACCESS MODES   STORAGECLASS   AGE   VOLUMEMODE
-persistentvolumeclaim/static-storage-pvc   Bound    static-storage-pv   2Gi        RWX            nfs            12s   Filesystem
-user@home 08:07:54 ~/git_store/devkub-homeworks/13-kubernetes-config-02-mounts/manifests |main → origin U:4 ?:1 ✗| →  kubectl get po,pv,pvc -n production -o wide
-NAME                            READY   STATUS              RESTARTS   AGE   IP              NODE             NOMINATED NODE   READINESS GATES
-pod/backend-69db8ffdd5-5k4zm    0/1     PodInitializing     0          39s   10.233.81.130   stage-worker-2   <none>           <none>
-pod/db-0                        1/1     Running             0          38s   10.233.66.65    stage-worker-1   <none>           <none>
-pod/frontend-5fcb5d778d-zh77d   0/1     ContainerCreating   0          37s   <none>          stage-worker-0   <none>           <none>
+NAME                                       STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE     VOLUMEMODE
+sergej@fedora:~/GIT_SORE/devkub-homeworks/13-kubernetes-config-02-mounts/manifests [±|main → origin U:3 ✗|] $ kubectl exec -n production frontend-867df49788-ckppd -c frontend -- sh -c "echo 'This is test prod' > /tmp/cache/prod-file.txt"
+sergej@fedora:~/GIT_SORE/devkub-homeworks/13-kubernetes-config-02-mounts/manifests [±|main → origin U:3 ✗|] $ kubectl exec -n production backend-7987fc7b4d-b4r84 -c backend -- sh -c "cat /data/static/prod-file.txt"
+This is test prod
+sergej@fedora:~/GIT_SORE/devkub-homeworks/13-kubernetes-config-02-mounts/manifests [±|main → origin U:3 ✗|] $ kubectl exec -n production backend-7987fc7b4d-b4r84  -- ls -l /data/static/
+Defaulted container "backend" out of: backend, wait-for-db (init)
+total 4
+-rw-r--r--. 1 root root 18 Nov 14 07:26 prod-file.txt
+sergej@fedora:~/GIT_SORE/devkub-homeworks/13-kubernetes-config-02-mounts/manifests [±|main → origin U:3 ✗|] $ 
+```
 
-NAME                                 CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                           STORAGECLASS   REASON   AGE   VOLUMEMODE
-persistentvolume/static-storage-pv   2Gi        RWX            Retain           Bound    production/static-storage-pvc   nfs                     37s   Filesystem
+```shell
+[root@stage-worker-2 ~]# find / -type f -name "prod-file.txt"
+/var/lib/kubelet/pods/531aaf94-1726-4523-af84-61daa6394ed9/volumes/kubernetes.io~nfs/pvc-e2efb401-8271-427b-97b4-8acaf67d2245/prod-file.txt
+[root@stage-worker-2 ~]# cat /var/lib/kubelet/pods/531aaf94-1726-4523-af84-61daa6394ed9/volumes/kubernetes.io~nfs/pvc-e2efb401-8271-427b-97b4-8acaf67d2245/prod-file.txt
+This is test prod
+[root@stage-worker-2 ~]#
+```
 
-NAME                                       STATUS   VOLUME              CAPACITY   ACCESS MODES   STORAGECLASS   AGE   VOLUMEMODE
-persistentvolumeclaim/static-storage-pvc   Bound    static-storage-pv   2Gi        RWX            nfs            37s   Filesystem
-user@home 08:08:20 ~/git_store/devkub-homeworks/13-kubernetes-config-02-mounts/manifests |main → origin U:4 ?:1 ✗| →  kubectl get po,pv,pvc -n production -o wide
-NAME                            READY   STATUS            RESTARTS   AGE   IP              NODE             NOMINATED NODE   READINESS GATES
-pod/backend-69db8ffdd5-5k4zm    0/1     PodInitializing   0          56s   10.233.81.130   stage-worker-2   <none>           <none>
-pod/db-0                        1/1     Running           0          55s   10.233.66.65    stage-worker-1   <none>           <none>
-pod/frontend-5fcb5d778d-zh77d   1/1     Running           0          54s   10.233.82.66    stage-worker-0   <none>           <none>
-
-NAME                                 CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                           STORAGECLASS   REASON   AGE   VOLUMEMODE
-persistentvolume/static-storage-pv   2Gi        RWX            Retain           Bound    production/static-storage-pvc   nfs                     54s   Filesystem
-
-NAME                                       STATUS   VOLUME              CAPACITY   ACCESS MODES   STORAGECLASS   AGE   VOLUMEMODE
-persistentvolumeclaim/static-storage-pvc   Bound    static-storage-pv   2Gi        RWX            nfs            54s   Filesystem
-user@home 08:08:36 ~/git_store/devkub-homeworks/13-kubernetes-config-02-mounts/manifests |main → origin U:4 ?:1 ✗| →  kubectl get po,pv,pvc -n production -o wide
-NAME                            READY   STATUS    RESTARTS   AGE    IP              NODE             NOMINATED NODE   READINESS GATES
-pod/backend-69db8ffdd5-5k4zm    1/1     Running   0          100s   10.233.81.130   stage-worker-2   <none>           <none>
-pod/db-0                        1/1     Running   0          99s    10.233.66.65    stage-worker-1   <none>           <none>
-pod/frontend-5fcb5d778d-zh77d   1/1     Running   0          98s    10.233.82.66    stage-worker-0   <none>           <none>
-
-NAME                                 CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                           STORAGECLASS   REASON   AGE   VOLUMEMODE
-persistentvolume/static-storage-pv   2Gi        RWX            Retain           Bound    production/static-storage-pvc   nfs                     98s   Filesystem
-
-NAME                                       STATUS   VOLUME              CAPACITY   ACCESS MODES   STORAGECLASS   AGE   VOLUMEMODE
-persistentvolumeclaim/static-storage-pvc   Bound    static-storage-pv   2Gi        RWX            nfs            98s   Filesystem
-user@home 08:09:20 ~/git_store/devkub-homeworks/13-kubernetes-config-02-mounts/manifests |main → origin U:4 ?:1 ✗| →  
-
+```shell
+root@stage-worker-0 ansible]# find / -type f -name "prod-file.txt"
+/var/lib/kubelet/pods/9a2a91d0-7da6-4a77-93fd-2024b0dd5285/volumes/kubernetes.io~nfs/pvc-e2efb401-8271-427b-97b4-8acaf67d2245/prod-file.txt
+[root@stage-worker-0 ansible]# cat /var/lib/kubelet/pods/9a2a91d0-7da6-4a77-93fd-2024b0dd5285/volumes/kubernetes.io~nfs/pvc-e2efb401-8271-427b-97b4-8acaf67d2245/prod-file.txt
+This is test prod
+[root@stage-worker-0 ansible]# 
 ```
