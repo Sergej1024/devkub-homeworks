@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: backend-{{ .Release.Name }}
+  name: backend-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: backend-{{ .Release.Name }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: backend-{{ .Release.Name }}
+    spec:
+      initContainers:
+      - name: wait-for-db
+        image: {{ .Values.postgres.image }}
+        command: [ "sh", "-c", "until pg_isready -h db-{{ .Release.Name }} -p {{ .Values.postgres.port }} -U {{ .Values.postgres.dbuser }}:{{ .Values.postgres.dbpassword }}; do echo 'not yet'; sleep 2; done" ]
+      containers:
+      - image: {{ .Values.backend.image }}
+        imagePullPolicy: IfNotPresent
+        name: backend-{{ .Release.Name }}
+        env:
+          - name: DATABASE_URL
+            value: postgres://{{ .Values.postgres.dbuser}}:{{ .Values.postgres.dbpassword }}@db-{{ .Release.Name }}:{{ .Values.postgres.port }}/{{ .Values.postgres.dbname }}
+        volumeMounts:
+          - mountPath: {{ .Values.backend.mountPath }}
+            name: static-storage
+      volumes:
+        - name: static-storage
+          persistentVolumeClaim:
+            claimName: {{ .Values.pvc.claimName }}-{{ .Release.Name }}

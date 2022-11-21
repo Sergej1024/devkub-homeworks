@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: frontend-{{ .Release.Name }}
+  name: frontend-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: frontend-{{ .Release.Name }}
+  replicas: {{ .Values.frontend.replicas }}
+  template:
+    metadata:
+      labels:
+        app: frontend-{{ .Release.Name }}
+    spec:
+      containers:
+      - image: {{ .Values.frontend.image }} #sergej1024/frontend:latest
+        imagePullPolicy: IfNotPresent
+        name: frontend-{{ .Release.Name }}
+        env:
+          - name: BASE_URL
+            value: {{ .Values.frontend.BASE_URL }}:{{.Values.backend.port }} #http://backend:9000
+        volumeMounts:
+          - mountPath: {{ .Values.frontend.mountPath }} #"/tmp/cache"
+            name: static-storage
+      volumes:
+        - name: static-storage
+          persistentVolumeClaim:
+            claimName: {{ .Values.pvc.claimName }}-{{ .Release.Name }} #static-storage-pvc

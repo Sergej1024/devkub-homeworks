@@ -1,0 +1,28 @@
+---
+pvc:
+  claimName: pvc
+  storage: 2Gi
+
+postgres:
+  image: postgres:13-alpine
+  replicas: 1
+  port: 5432
+  dbname: news
+  dbuser: postgres
+  dbpassword: postgres
+  type: ClusterIP
+
+frontend:
+  image: sergej1024/frontend
+  BASE_URL: http://backend
+  replicas: 1
+  port: 80
+  type: ClusterIP
+  mountPath: /tmp/cache
+
+backend:
+  image: sergej1024/backend
+  replicas: 1
+  port: 9000
+  type: ClusterIP
+  mountPath: /data/static
