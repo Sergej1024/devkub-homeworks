@@ -1,0 +1,180 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    qbec.io/component: back
+  labels:
+    app: backend
+    qbec.io/application: first
+    qbec.io/environment: stage
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - env:
+        - name: DATABASE_URL
+          value: postgres://postgres:postgres@db:5432/news
+        image: sergej1024/backend
+        name: backend
+        ports:
+        - containerPort: 9000
+        volumeMounts:
+        - mountPath: /static
+          name: static-storage
+      volumes:
+      - name: static-storage
+        persistentVolumeClaim:
+          claimName: static-storage-pvc
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    qbec.io/component: front
+  labels:
+    app: frontend
+    qbec.io/application: first
+    qbec.io/environment: stage
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - env:
+        - name: BASE_URL
+          value: http://backend:9000
+        image: sergej1024/frontend
+        name: frontend
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /static
+          name: static-storage
+      volumes:
+      - name: static-storage
+        persistentVolumeClaim:
+          claimName: static-storage-pvc
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    qbec.io/component: pvc
+  labels:
+    qbec.io/application: first
+    qbec.io/environment: stage
+  name: static-storage-pvc
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: nfs
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    qbec.io/component: services
+  labels:
+    app: backend
+    qbec.io/application: first
+    qbec.io/environment: stage
+  name: backend
+spec:
+  ports:
+  - port: 9000
+  selector:
+    app: backend
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    qbec.io/component: services
+  labels:
+    app: db
+    qbec.io/application: first
+    qbec.io/environment: stage
+  name: db
+spec:
+  ports:
+  - port: 5432
+  selector:
+    app: db
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    qbec.io/component: services
+  labels:
+    app: frontend
+    qbec.io/application: first
+    qbec.io/environment: stage
+  name: frontend
+spec:
+  ports:
+  - port: 80
+  selector:
+    app: frontend
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations:
+    qbec.io/component: statefulset
+  labels:
+    qbec.io/application: first
+    qbec.io/environment: stage
+  name: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  serviceName: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: postgres
+        - name: POSTGRES_DB
+          value: news
+        image: postgres:13-alpine
+        name: db
+        ports:
+        - containerPort: 5432
+
